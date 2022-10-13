@@ -1,0 +1,498 @@
+
+
+ <!DOCTYPE html>
+<html>
+<head>
+
+ 
+   <style>
+   *{
+  margin: 0;
+  padding: 0;
+  list-style:none;
+  font-family: 'PT Serif', serif;
+  box-sizing:border-box;
+}
+#app{
+  width: 1200px;
+  margin:0  auto;
+  background:#3E3E3E;
+  .menu{
+    background:#B19E73;
+    height: 100px;
+    line-height: 100px;
+    opacity:.7;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    font-size: 20px;
+    .list{
+      display:flex;
+      cursor:pointer;
+      width: 65%;
+      justify-content:space-around;
+    }
+    .logo{
+      width: 30%;
+      text-align:center;
+    }
+  }
+  .banner{
+    width: 100%;
+    height: 500px;
+    overflow:hidden;
+    position:relative;
+    img{
+      position:absolute;
+      top: -40%;;
+    }
+  }
+  .roomList{
+    width: 1050px;
+    margin: 0 auto;
+    display:flex;
+    justify-content:space-around;
+    flex-wrap:wrap;
+    li{
+      width: 500px;
+      height: 350px;
+      margin:20px 0;
+      position:relative;
+      cursor:pointer;
+    }
+    .intro{
+      position:relative;
+      width: 100%;
+      height: 80px;
+      line-height: 80px;
+      bottom: 100px;
+      background:#fff;
+      opacity:.6;
+      .name{
+        padding-left:20px;
+        display:inline-block;
+        width: 40%;
+        text-align:left;
+      }
+      .price{
+        width: 50%;
+        display:inline-block;
+        text-align:right;
+      }
+      
+    }
+    .pic{
+      width: 100%;
+      height: 100%;
+      overflow:hidden;
+      img{
+        width: 100%;
+      }
+    }
+  }
+}
+.title{
+  color:#B19E73;
+  font-weight: 900;
+  text-align:center;
+  padding:15px 0;
+}
+
+footer{
+  height: 100px;
+  line-height: 100px;
+  background:#B19E73;
+  color:#fff;
+  ul{ 
+      display:flex;
+      align-items:center;
+    justify-content:space-around;
+  }
+
+  
+}
+
+.eachRoom{
+  width: 500px;
+  margin:0 auto;
+  p{
+    color:#fff;
+  }
+  .price{
+    span{
+      display:inline-block;
+      margin:0 10px;
+      color:#B19E73;
+      font-size: 20px;
+      font-weight: 900;
+    }
+  }
+  .pic{
+     width: 500px;
+     height: 350px;
+     overflow:hidden;
+     position:relative;
+      margin:0 auto;
+    img{
+      width:100%;
+    }
+  }
+  .preview{
+    position:absolute;
+    bottom: 20px;
+    left: 60%;
+    display:flex;
+    li{
+      margin: 0 5px;
+      cursor:pointer;
+      width: 50px;
+      height: 50px;
+      border:2px solid #fff;
+      overflow:hidden;
+      img{
+        width: 100%;
+      }
+    }
+  }
+}
+
+.description{
+  // width: 60%;
+  margin:0 auto;
+  padding:10px 0 50px 0;
+  color:#fff;
+  line-height: 20px;
+}
+.booking{
+  .sub{
+    color:#fff;
+    display:inline-block;
+    margin:10px;
+  }
+}
+
+.btn-group{
+  padding:10px 0;
+}
+.btn{
+  background:#B19E73;
+  color:#fff;
+  border-radius:5px;
+  width: 150px;
+  height: 30px;
+  border:none;
+  cursor:pointer;
+  margin-right: 5px;
+}
+
+.vdp-datepicker{
+  display:inline-block;
+}
+
+.booking-list{
+  padding:10px 0;
+  color:#fff;
+  i{
+    color:#B19E73;
+  }
+}
+
+input{
+  border:none;
+  border-radius:5px;
+  height: 30px;
+  padding-left:5px;
+}
+</style>
+<script>
+new Vue({
+  el:"#app",
+  data:{
+    token:'hkUisZVXXYKK5OE6EEkts9tAdHZZylVUX2YyHi1LLQxiol8J2xNk6uG6wqbb',
+    apiUrl:'https://challenge.thef2e.com/api/thef2e2019/stage6/room',
+    roomData:[],
+    roomDetail:{},
+    bookingArr:[],
+    nowSelectImg:0,
+    viewStatus:0,
+    selectDate:{
+        begin:new Date(),
+        end:new Date()
+    },
+    userData:{
+        name:'',
+        tel:'',
+        date:[]
+    },
+  },
+  computed: {
+    checkHoliday(){
+            let date = new Date().getDay()
+            return date == 0 || data == 6
+        },
+        service(){
+        return this.roomDetail.amenities && Object.keys(this.roomDetail.amenities)
+      },
+    },
+    components:{
+        vuejsDatepicker
+    },
+   methods: {
+     setTime(d){
+       return d.Format("yyyy-MM-dd")
+     },
+        // getStart(d){
+        //     // d.setHours(0,0,0)
+        //     return d.Format("yyyy-MM-dd")
+        // },
+        // getEnd(d){
+        //     // d.setHours(23,59,59)
+        //     return d.Format("yyyy-MM-dd")
+        // },
+        changeView(i,id){
+            this.viewStatus = i
+            if(i==1){
+                this.getRoomDetail(id)
+            }else{
+                this.getRoom()
+            }
+        },
+        changeShowImage(i){
+          this.nowSelectImg=i
+        },
+         formateDate(arr){  
+            return arr.map((item)=>{
+              item = new Date(item)
+              // console.log('item',item)
+              let year = item.getFullYear()
+              let month = item.getMonth()+1
+              let date = item.getDate()
+                return `${year}-${this.addZero(month)}-${this.addZero(date)}`
+            })
+        },
+        addZero(num){
+          if(num<10){
+            return '0'+num.toString( )
+          }
+          
+          return num
+        },
+        createDateArr(){
+          // console.log('createDateArr')
+            let dateArr = []
+            let currentDate = this.selectDate.begin
+            let stopDate = this.selectDate.end
+            while(currentDate <= stopDate){
+                dateArr.push(currentDate)
+                // console.log('currentDate----',currentDate)
+                currentDate = new Date(currentDate)
+                currentDate = currentDate.setDate(currentDate.getDate()+1)
+                // console.log('currentDate----end',currentDate)
+            }
+            this.userData.date = this.formateDate(dateArr)
+        },
+        sendAjax(url,obj=''){
+          console.log('obj',obj)
+          console.log('fetch')
+            return fetch(url,{
+                    // mode:'no-cors',
+                    headers: new Headers({
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json;charset=utf-8',
+                        'Authorization':`Bearer ${this.token}`,
+                    }),...obj
+            })
+            .then((response)=>{
+              console.log('response----',response)  
+              if (response.status === 200 || response.status === 0) {
+                    return Promise.resolve(response.json())
+                } else {
+                  console.log('error',response)
+                    return Promise.reject(new Error(response.statusText))
+                }
+            }).catch((err)=>{
+                // Error :(
+            })
+        },
+        cancelRoom(){
+            let obj = {
+              method: 'DELETE',
+            }
+            this.sendAjax(this.apiUrl+'s',obj).then((reponse)=>{
+                if(reponse.success){
+                    alert('取消成功')
+                }
+            })
+        },
+        customFormatter(date) {
+            return (date).Format("yyyy-MM-dd")
+        },
+        getRoomDetail(id){
+            this.sendAjax(this.apiUrl+`/${id}`).then((reponse)=>{
+              console.log('detail',reponse)
+                if(reponse.success){
+                    this.roomDetail = reponse.room[0]
+                    this.bookingArr = reponse.booking
+                }
+            })
+        },
+        checkUserData(){
+            this.createDateArr()
+            if(this.userData.date.length==0){
+                alert('無效的日期')
+                return false
+            }
+            let nameReg =/^[\u4E00-\u9FA5]{2,4}$/
+            if(!nameReg.test(this.userData.name)){
+                alert('姓名有誤')
+                return false
+            }
+            let phoneReg = /^09[0-9]{8}$/
+            if(!phoneReg.test(this.userData.tel)){
+                alert('電話有誤')
+                return false
+            }
+            return true
+        },
+        bookingRoom(id){
+            if(!this.checkUserData()){return}
+            let obj = {
+              method: 'POST',
+              body:JSON.stringify(this.userData)
+            }
+            this.sendAjax(this.apiUrl+`/${id}`,obj).then((reponse)=>{
+                if(reponse.success){
+                    this.getRoomDetail(id)
+                }else{
+                  alert(reponse.message)
+                }
+            })
+        },
+        getRoom(){
+            // let obj = {method:get}
+            this.sendAjax(this.apiUrl+'s').then((reponse)=>{
+                console.log('response',reponse);
+              
+                if(reponse.success){
+                    this.roomData = reponse.items
+                }
+            })
+        }
+    },
+    mounted() {
+        this.getRoom()
+    },
+})
+
+</script>
+<div id="app">
+        <header>
+            <div class="menu">
+            <div class="logo">Lavik</div>
+            <ul class="list">
+                <li @click="changeView(0)">HOME</li>
+                <li>About</li>
+                <li>Rooms</li>
+                <li>Reservation</li>
+                <li>Contact</li>
+            </ul>
+          </div>
+          <div class="banner">
+            <div class="text">
+              ENJOY YOUR STAY
+            </div>
+            <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1351&q=80" alt="">
+          </div>
+        </header>
+        <div class="index"  v-if="viewStatus == 0">
+            <h1 class="title">ROOMS</h1>
+            <ul class="roomList">
+            <li v-for="(item, i) in roomData" :key="i" @click="changeView(1,item.id)">
+                <div class="pic">
+                    <img :src="item.imageUrl" alt="imageUrl">
+                </div>
+              <p class="intro">
+                <span class="name">{{item.name}}</span>
+                 <span class="price holiday" v-if="checkHoliday">{{item.holidayPrice}}up</span>
+                <span class="price" v-else>{{item.normalDayPrice}}up</span>
+              </p>
+         
+                
+            </li>
+          </ul>
+        </div>
+
+        <div class="eachRoom" v-if="viewStatus == 1">
+            <h1 class="title">{{roomDetail.name}}</h1>
+            <div class="pic">
+                <img :src="roomDetail.imageUrl &&　roomDetail.imageUrl[nowSelectImg]" alt="">
+                <ul class="preview">
+                  <li v-for="(vo, i) in roomDetail.imageUrl" :key="i" @click="changeShowImage(i)">
+                    <img alt="" :src="vo">
+                  </li>  
+                </ul>
+            </div>
+            <p class="price holiday" v-if="checkHoliday"> Total:<span>${{roomDetail.holidayPrice}}</span></p>
+            <p class="price" v-else>total<span>${{roomDetail.normalDayPrice}}</span></p>
+          <div class="booking">
+            <span class="sub">Name:</span><input type="text" name="" v-model="userData.name">
+            <span class="sub">Tel:</span><input type="tel" v-model="userData.tel">
+<!--             <span class="sub">   Date</span> -->
+            <vuejs-datepicker  v-model="selectDate.begin" :not-before="selectDate.end" >
+                <div slot="beforeCalendarHeader" class="calender-header">
+                    Choose a Date
+                </div>
+            </vuejs-datepicker>
+            <vuejs-datepicker  v-model="selectDate.end" >
+                <div slot="beforeCalendarHeader" class="calender-header">
+                    Choose a Date
+                </div>
+            </vuejs-datepicker>
+            <div class="btn-group">
+                 <button class="btn" @click="bookingRoom(roomDetail.id)">BOOK NOW</button>
+                <button class="btn" @click="cancelRoom">取消房間</button>
+            </div>
+            <ul class="booking-list">
+                <li v-for="(target, index) in bookingArr" :key="index">
+                  訂房者名稱:<p>{{target.name}}</p>
+                  訂房者電話:<p>{{target.tel}}</p>
+                  訂房時間:<p>{{target.date}}</p>
+              </li>
+            </ul>
+        </div>
+          
+          <ul class="booking-list">
+              checkInEarly<li>{{roomDetail.checkInAndOut && roomDetail.checkInAndOut.checkInEarly}}</li>
+              checkInLate<li>{{roomDetail.checkInAndOut &&　roomDetail.checkInAndOut.checkInLate}}</li>
+              checkOut<li>{{roomDetail.checkInAndOut && roomDetail.checkInAndOut.checkOut}}</li>
+          </ul>
+            <p class="description">{{roomDetail.description}}</p>
+            <h1 class="title">Room details</h1>
+            <ul class="booking-list">
+              <li v-for="(oo, j) in service" :key="j">
+                <span>{{oo}}</span> 
+                <i v-if="service[oo]" class="far fa-check-circle"></i>
+                <i v-else class="far fa-times-circle"></i>
+              </li>
+            </ul>
+<!--             <button @click="changeView(0)">回大廳</button> -->
+            <ul class="bookingList">
+                <li v-for="(vo, index) in roomDetail.booking" :key="index">
+                    <p>{{vo.name}}</p>
+                    <p>{{vo.tel}}</p>
+                    <p>{{vo.date}}</p>
+                </li>
+            </ul>
+        </div>
+
+      <footer>
+        <ul>
+          <li>Lavik</li>
+          <li>(847) 797 7339</li>
+          <li>lavik-hostel@hostel.com</li>
+          <li>Kata Road, Karon Sub District, Slovenia</li>
+          <li></li>
+        </ul>
+  </footer>
+  
+    </div>
